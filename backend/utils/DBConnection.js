@@ -3,7 +3,7 @@ const { Sequelize } = require("sequelize");
 // const sequelize = new Sequelize({
 //   username: "kumaran",
 //   password: "kumaran",
-//   database: "BV_Finance",
+//   database: "Intern_Task",
 //   host: "localhost",
 //   dialect: "postgres",
 //   pool: {
@@ -14,7 +14,7 @@ const { Sequelize } = require("sequelize");
 //   },
 // });
 
-const sequelize = new Sequelize("postgres://aodssokt:b5gyC4NU-aew93nDmTZhHJasphSmU75k@isabelle.db.elephantsql.com/aodssokt")
+const sequelize = new Sequelize("postgres://eazahxze:e8-lsoFSnaO9NY_7KOGfIh9af0_DEEUi@tuffi.db.elephantsql.com/eazahxze")
 
 sequelize
   .authenticate()

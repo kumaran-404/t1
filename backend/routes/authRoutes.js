@@ -1,42 +1,55 @@
+const bcrypt = require("bcrypt");
 const User = require("../models/User");
 const {
   ErrorMessage,
   SuccessMessage,
   tokenErrorMessage,
 } = require("../utils/handler");
-const brcypt = require("bcrypt");
 const { createToken, getToken } = require("../validators/token");
 const router = require("express").Router();
 
-// router.post("/create-admin", async (req, res) => {
-//   try {
-//     const data = {
-//       isAdmin: true,
-//       password: "20232023",
-//       name: "Bala",
-//       phoneNumber: "8524862383",
-//     };
+router.post("/signup", async (req, res) => {
+  try {
+    const { email, password, isModerator, name } = req.body;
 
-//     await User.create(data);
+    console.log(req.body);
 
-//     return SuccessMessage("done", res);
-//   } catch (err) {
-//     return ErrorMessage("error", res);
-//   }
-// });
+    const newUser = await User.create({
+      email,
+      password,
+      isModerator,
+      name,
+    });
+
+    await newUser.save();
+
+    return SuccessMessage({ status: "Success" }, res);
+  } catch (err) {
+    if (err.message === "Validation error") {
+      return SuccessMessage({
+        status: "Failure",
+        message: "User already Found",
+      },res);
+    }
+    return ErrorMessage(err.message, res);
+  }
+});
 
 router.post("/login", async (req, res) => {
   try {
-    const { phoneNumber, password } = req.body;
+    const { email, password } = req.body;
 
     const user = await User.findOne({
-      where: { phoneNumber },
+      where: { email },
     });
 
-    console.log(user);
+    console.log("Login");
 
     if (!user) {
-      return ErrorMessage("User not Found", res);
+      return SuccessMessage(
+        { status: "Failure", message: "User not Found" },
+        res
+      );
     }
 
     const result = password === user.getDataValue("password");
@@ -44,13 +57,17 @@ router.post("/login", async (req, res) => {
     if (result) {
       const token = createToken({
         name: user.getDataValue("name"),
-        phoneNumber: user.getDataValue("phoneNumber"),
+        email: user.getDataValue("email"),
         id: user.getDataValue("id"),
-        isAdmin: user.getDataValue("isAdmin"),
+        isModerator: user.getDataValue("isModerator"),
       });
-      return SuccessMessage({ token }, res);
+      return SuccessMessage({ status: "Success", token }, res);
     }
-    return ErrorMessage("Password is wrong", res);
+
+    return SuccessMessage(
+      { status: "Failure", message: "Password is wrong" },
+      res
+    );
   } catch (err) {
     return ErrorMessage(err.message, res);
   }

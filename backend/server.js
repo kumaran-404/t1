@@ -3,12 +3,12 @@ const app = express();
 const dotenv = require("dotenv");
 dotenv.config();
 const DBConnection = require("./utils/DBConnection");
-const userRoutes = require("./routes/UserRoutes");
+const discussionRoutes = require("./routes/Discussion");
+const commentRoutes = require("./routes/Comment");
 const authRoutes = require("./routes/authRoutes");
-const { ErrorMessage,tokenErrorMessage } = require("./utils/handler");
-const { getToken } = require("./validators/token");
 const cors = require("cors");
-const path = require('path');
+const {ErrorMessage,tokenErrorMessage} = require("./utils/handler");
+const {getToken} = require("./validators/token")
 
 app.use(express.json());
 
@@ -19,34 +19,28 @@ app.use(
 );
 
 require("./models/User");
-
-console.log(path.dirname(__filename))
-
-app.use(express.static("../frontend/web-build"));
-
-console.log(__dirname)
-app.get('/', function (req, res) {
-  res.sendFile( 'index.html',{root:"../frontend/web-build"});
-});
+require("./models/comment");
+require("./models/Discussion");
 
 app.use("/api/auth", authRoutes);
 
-// app.use((req, res, next) => {
-//   try {
-//     const token = getToken(req);
+app.use((req, res, next) => {
+  try {
+    const token = getToken(req);
 
-//     if (!token) return tokenErrorMessage( res);
+    if (!token) return tokenErrorMessage(res);
 
-//     res.locals.data = token;
+    res.locals.data = token;
 
-//     next();
-//   } catch (err) {
-//     return ErrorMessage(err.message, res);
-//   }
-// });
+    next();
+  } catch (err) {
+    return ErrorMessage(err.message, res);
+  }
+});
 
-app.use("/api/users", userRoutes);
+app.use("/api/discussion", discussionRoutes);
+app.use("/api/comment", commentRoutes);
 
-app.listen(80, (err) => {
-  if (!err) console.log("Server Started ", 80);
+app.listen(3000, (err) => {
+  if (!err) console.log("Server Started ", 3000);
 });
