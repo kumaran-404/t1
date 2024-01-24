@@ -8,6 +8,7 @@ const Comment = require("../models/comment");
 
 // get all  discussion
 router.get("/:page/:pageSize", async (req, res) => {
+
   try {
     const { page, pageSize } = req.params;
     let data = await Discussion.findAll({

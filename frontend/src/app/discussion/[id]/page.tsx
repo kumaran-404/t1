@@ -1,6 +1,6 @@
 "use client";
 import { useRouter } from 'next/navigation';
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { BiUpvote } from "react-icons/bi";
 // import { BiSolidUpvote } from "react-icons/bi";
 import { BiDownvote } from "react-icons/bi";
@@ -24,6 +24,8 @@ function Discussion({ params }: { params: { id: String } }) {
 
   const [loading, setLoading] = useState(true)
 
+  const [requesting, setRequesting] = useState(false)
+
   const [comments, setComments] = useState([])
 
   const [loadComments, setLoadComments] = useState(-1)  //-1 for loading , 1 for obtained 
@@ -34,7 +36,11 @@ function Discussion({ params }: { params: { id: String } }) {
 
     if (newComment && newComment.trim().length === 0) return;
 
+    setRequesting(true)
+
     const resp = await postComment(params.id, newComment)
+
+    setRequesting(false)
 
     // commentRef.current?.value = ""
 
@@ -48,7 +54,7 @@ function Discussion({ params }: { params: { id: String } }) {
 
   }
 
-  const handleFetchComment = async () => {
+  const handleFetchComment = useCallback(async () => {
     setLoadComments(-1)
 
     const res = await fetchComment(params.id)
@@ -56,12 +62,13 @@ function Discussion({ params }: { params: { id: String } }) {
     setComments(res)
 
     setLoadComments(1)
-  }
+  }, [params.id])
 
   useEffect(() => {
 
     (
       async () => {
+
 
 
         const res = await fetchDiscussion(params.id)
@@ -78,7 +85,7 @@ function Discussion({ params }: { params: { id: String } }) {
           setData(res)
         }
       })()
-  }, [])
+  }, [router, handleFetchComment, params.id])
 
 
   return (
@@ -130,7 +137,7 @@ function Discussion({ params }: { params: { id: String } }) {
               rows={5}
               ref={commentRef}
             ></textarea>
-            <button className={'bg-red-600 p-2 rounded-md shadow-md focus:ring focus:ring-red-300 text-white disabled:bg-red-100'} onClick={async () => { await handlePostComment() }} disabled={loadComments == -1}>{loadComments === -1 ? "Loading" : "Comment"}</button>
+            <button className={`${requesting ? "bg-red-200" : "bg-red-600"} p-2 rounded-md shadow-md focus:ring focus:ring-red-300 text-white disabled:bg-red-100`} disabled={requesting} onClick={async () => { await handlePostComment() }} >{loadComments === -1 ? "Loading" : "Comment"}</button>
           </div>
 
           <div className='cursor-pointer'>

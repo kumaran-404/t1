@@ -26,7 +26,7 @@ axiosObj.interceptors.request.use(
 
 export const signup = async (data) => {
   try {
-    const resp = await axiosObj.post(URLS.SIGNUP, data);
+    const resp = await axiosObj.post(URLS.SIGNUP, data );
 
     return resp.data;
   } catch (err) {
@@ -36,7 +36,7 @@ export const signup = async (data) => {
 
 export const login = async (data) => {
   try {
-    const resp = await axiosObj.post(URLS.LOGIN, data);
+    const resp = await axiosObj.post(URLS.LOGIN, data,);
 
     return resp.data;
   } catch (err) {
@@ -67,7 +67,7 @@ export const createDiscussion = async (data) => {
 
 export const fetchAllDiscussion = async () => {
   try {
-    const resp = await axiosObj.get(URLS.DISCUSSION + "1/5/");
+    const resp = await axiosObj.get(URLS.DISCUSSION + "1/5/", { mode: 'no-cors' });
     return resp.data.data;
   } catch (err) {
     return null;
@@ -77,7 +77,7 @@ export const fetchAllDiscussion = async () => {
 export const fetchDiscussion = async (id) => {
   try {
     console.log("id", id);
-    const resp = await axiosObj.get(URLS.DISCUSSION + id);
+    const resp = await axiosObj.get(URLS.DISCUSSION + id, { mode: 'no-cors' });
     return resp.data.data;
   } catch (err) {
     console.log(err);
@@ -102,7 +102,7 @@ export const deleteDiscussion = async (id) => {
 export const fetchComment = async (id) => {
   try {
     console.log("id", id);
-    const resp = await axiosObj.get(URLS.COMMENT + id);
+    const resp = await axiosObj.get(URLS.COMMENT + id, { mode: 'no-cors' });
     return resp.data.data;
   } catch (err) {
     console.log(err);

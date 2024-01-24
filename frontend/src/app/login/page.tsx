@@ -3,7 +3,7 @@
 
 import { login, signup } from "@/api";
 import Link from "next/link";
-import { useContext, useEffect, useRef } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { toast, ToastContainer } from "react-toastify"
 import { AuthContext } from "@/components/AuthProvider";
 import { useRouter } from "next/navigation";
@@ -12,15 +12,15 @@ function Login() {
 
     const emailRef = useRef<HTMLInputElement>(null)
     const passwordRef = useRef<HTMLInputElement>(null)
-
-    const { isLogin } = useContext (AuthContext)
+    const [requesting, setRequesting] = useState(false);
+    const { isLogin } = useContext(AuthContext)
     const router = useRouter()
 
     useEffect(() => {
 
         if (isLogin) router.push("/")
 
-    }, [isLogin])
+    }, [isLogin, router])
 
     const handler = async () => {
 
@@ -34,11 +34,14 @@ function Login() {
             return;
         }
 
+        setRequesting(true)
 
         const resp = await login({
             email: emailRef.current?.value,
             password: passwordRef.current?.value
         })
+
+        setRequesting(false)
 
         if (resp) {
 
@@ -79,9 +82,9 @@ function Login() {
                 />
 
                 <div>
-                    Don't have account ? <Link className="text-blue-500" href="/signup">Signup</Link>
+                    Don&apos;t have account ? <Link className="text-blue-500" href="/signup">Signup</Link>
                 </div>
-                <button className='bg-red-600 p-2 rounded-md shadow-md text-white' onClick={async () => await handler()} >Login</button>
+                <button disabled={requesting} className={`${!requesting ? "bg-red-600" : "bg-red-200"} p-2 rounded-md shadow-md text-white`} onClick={async () => await handler()} >{requesting ? "Please wait..." : "Login"}</button>
             </div>
             <ToastContainer></ToastContainer>
         </div>

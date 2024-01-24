@@ -13,9 +13,7 @@ const {getToken} = require("./validators/token")
 app.use(express.json());
 
 app.use(
-  cors({
-    origin: "*",
-  })
+  cors()
 );
 
 require("./models/User");

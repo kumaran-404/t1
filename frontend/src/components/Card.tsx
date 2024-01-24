@@ -1,5 +1,6 @@
 import { deleteDiscussion } from "@/api";
 import Link from "next/link";
+import { useState } from "react";
 import { FaHeart } from "react-icons/fa";
 import { IoChatboxOutline } from "react-icons/io5";
 import { MdDelete } from "react-icons/md";
@@ -8,8 +9,15 @@ import { toast } from "react-toastify";
 
 function Card({ data, fetchHandler }: { data: any, fetchHandler: any }) {
 
+    const [requesting, setRequesting] = useState(false)
+
     const handleDelete = async (id: any) => {
+
+        setRequesting(true)
+
         const resp = await deleteDiscussion(id)
+
+        setRequesting(false)
 
         if (resp) {
 
@@ -30,7 +38,7 @@ function Card({ data, fetchHandler }: { data: any, fetchHandler: any }) {
                 <h4 className="text-lg font-semibold text-slate-900">
                     <Link href={`/discussion/${data.id}`}>{data.topic}</Link>
                 </h4>
-                <div className="text-md text-red-600 flex items-center gap-4" onClick={() => handleDelete(data.id)}><MdDelete />Delete</div>
+                <button className={` ${requesting ? "text-red-200" : "text-red-600 "}text-md flex items-center gap-4`} disabled={requesting} onClick={() => handleDelete(data.id)}><MdDelete />{requesting ? "Deleting.." : "Delete"}</button>
 
             </div>
 

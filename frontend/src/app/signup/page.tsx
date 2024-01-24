@@ -5,7 +5,7 @@ import { signup } from "@/api";
 import { AuthContext, AuthProps } from "@/components/AuthProvider";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useContext, useEffect, useRef } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { toast, ToastContainer } from "react-toastify"
 
 function Signup() {
@@ -14,7 +14,7 @@ function Signup() {
     const passwordRef = useRef<HTMLInputElement>(null)
     const moderatorRef = useRef<HTMLSelectElement>(null)
     const nameRef = useRef<HTMLInputElement>(null)
-
+    const [requesting, setRequesting] = useState(false);
     const { isLogin } = useContext(AuthContext)
     const router = useRouter()
 
@@ -22,7 +22,7 @@ function Signup() {
 
         if (isLogin) router.push("/")
 
-    }, [isLogin])
+    }, [isLogin, router])
 
     const handler = async () => {
 
@@ -40,12 +40,16 @@ function Signup() {
             return;
         }
 
+        setRequesting(true)
+
         const resp = await signup({
             email: emailRef.current?.value,
             isModerator: moderatorRef.current?.value == "Moderator",
             name: nameRef.current?.value,
             password: passwordRef.current?.value
         })
+
+        setRequesting(false)
 
         if (resp) {
             if (resp.data.status === "Success") {
@@ -64,7 +68,7 @@ function Signup() {
 
     }
 
-    if(isLogin) return <></>
+    if (isLogin) return <></>
 
 
     return (
@@ -99,7 +103,7 @@ function Signup() {
                 <div>
                     Already have account ? <Link className="text-blue-500" href="/login">Login</Link>
                 </div>
-                <button className='bg-red-600 p-2 rounded-md shadow-md text-white' onClick={async () => await handler()} >Create Account</button>
+                <button disabled={requesting} className={`${!requesting ? "bg-red-600" : "bg-red-200"} p-2 rounded-md shadow-md text-white`} onClick={async () => await handler()} >Create Account</button>
             </div>
             <ToastContainer></ToastContainer>
         </div>
